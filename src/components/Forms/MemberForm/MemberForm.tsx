@@ -1,28 +1,21 @@
-// React And Hooks
 import React, { useEffect, useState } from "react";
 
-//Hook-Form
 import { useForm, SubmitHandler } from "react-hook-form";
 
-// Styles
 import "../Forms.css";
 import { useNavigate, useParams } from "react-router-dom";
 
-// Thunks
 import {
   addMember,
   updateMember,
 } from "../../../redux/slice/members/memberSlice";
 
-// Redux
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 
-// React-Hot-Toast
 import toast from "react-hot-toast";
 import Loading from "../../common/Loading/Loading";
 import UploadImage from "../../common/uploadImage/UploadImage";
 
-// Types
 type Inputs = {
   name: string;
   photo: string;
@@ -34,10 +27,8 @@ type Inputs = {
 const MemberForm: React.FC = () => {
   const dispatch = useAppDispatch();
 
-
   const { id } = useParams();
 
-  // Info From Slice
   const { records, isLoading, error } = useAppSelector(
     (state) => state.memberSlice
   );
@@ -49,8 +40,6 @@ const MemberForm: React.FC = () => {
   const [description, setDescription] = useState("");
   const [email, setEmail] = useState("");
   
-
-
 
   const isUpdateMode = typeof id === "string";
 
@@ -66,7 +55,6 @@ const MemberForm: React.FC = () => {
     }
   }, [id, isUpdateMode, records]);
 
-  // Hook-Form
   const {
     register,
     handleSubmit,
@@ -85,8 +73,6 @@ const MemberForm: React.FC = () => {
     reset({ name, qualification, description, email });
   }, [name, qualification, email, description, reset]);
 
-
-  // Function To Handle Submit
   const form = new FormData();
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     form.append("name", data.name);
@@ -94,27 +80,24 @@ const MemberForm: React.FC = () => {
     form.append("qualification", data.qualification);
     form.append("email", data.email);
 
-
     const action = isUpdateMode
       ? updateMember({ id: id, data: form })
       : addMember(form);
 
-    dispatch(action).then(() => {
-      if (error) {
-        toast.error("Please Try Again");
-      } else {
+    dispatch(action)
+      .unwrap()
+      .then(() => {
         toast.success(
           isUpdateMode ? "Update Successful" : "Addition Successful"
         );
         navigate("/team-members");
-      }
-    });
+      })
+      .catch(() => toast.error("Something went wrong, please try again"));
   };
 
   return (
-    <Loading status={isLoading} error={error}>
+    <Loading status={isLoading} error={error} variant="form" hasData>
       <form className="student-form-form" onSubmit={handleSubmit(onSubmit)}>
-        {/* Form Fields */}
         <div className="form-group">
           <label htmlFor="Name">Name</label>
           <input
@@ -168,11 +151,11 @@ const MemberForm: React.FC = () => {
           )}
         </div>
 
-
         <UploadImage form={form} type="photo" records={records}/>
 
-        <button type="submit" className="submit-button">
-          {typeof id == "string" ? "UPDATE" : "ADD"}
+        <button type="submit" className="submit-button" disabled={isLoading === "Pending"}>
+          {isLoading === "Pending" && <span className="btn-spinner" />}
+          {typeof id == "string" ? "Save Changes" : "Add Item"}
         </button>
       </form>
     </Loading>

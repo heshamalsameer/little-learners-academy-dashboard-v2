@@ -10,7 +10,6 @@ const addMember = createAsyncThunk(
           "/api/team-members",data
         );
 
-        console.log(res.data)
   
         return res.data.data;
       } catch (error) {

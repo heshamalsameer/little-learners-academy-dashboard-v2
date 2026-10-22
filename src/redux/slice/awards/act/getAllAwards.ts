@@ -7,7 +7,6 @@ const getAllAwards = createAsyncThunk(
     const { rejectWithValue } = thunkAPI;
     try {
       const res = await axios.get("/api/awards");
-      console.log(res.data);
       return res.data.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

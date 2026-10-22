@@ -1,10 +1,11 @@
-// components/Benefits.tsx
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchBenefits, removeBenefit } from "../../redux/benefit/benefit";
 import { RootState, AppDispatch } from "../../redux/store";
-import { useNavigate } from "react-router-dom";
-import Loading from "../../components/common/Loading/Loading";
+import SimpleListPage, { mediaUrl } from "../../components/common/ui/SimpleListPage";
+import CardActions from "../../components/common/ui/CardActions";
+import { ui } from "../../components/common/ui/ui";
 
 const Benefits: React.FC = () => {
   const { benefits, loading, error } = useSelector((state: RootState) => state.benefits);
@@ -15,53 +16,35 @@ const Benefits: React.FC = () => {
     dispatch(fetchBenefits());
   }, [dispatch]);
 
-  const handleDelete = (id: string) => {
-    dispatch(removeBenefit(id));
-  };
+  const list = Array.isArray(benefits) ? benefits : [];
 
   return (
-    <Loading status={loading ? "Pending" : error ? "Fail" : "Success"} error={error}>
-      <div className="max-w-6xl mx-auto p-6 rounded-lg">
-        <h1 className="text-3xl font-semibold mb-6 text-dimBlack text-center">Benefits Management</h1>
-        <button
-          onClick={() => navigate("/add-benefit")}
-          className="px-5 py-2 bg-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-all mb-6"
-        >
-          Add New Benefit
-        </button>
-        <div>
-          <h2 className="text-2xl font-semibold text-dimBlack mb-4">All Benefits</h2>
-          {Array.isArray(benefits) && benefits.length > 0 ? (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {benefits.map((benefit) => (
-      <div key={benefit._id} className="bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow">
-        <h3 className="text-lg font-semibold text-dimBlack">{benefit.title}</h3>
-        {benefit.icon && <img src={benefit.icon} alt="Icon" className="w-12 h-12 mt-3" />}
-        <p className="text-dimBlack mt-2 text-sm">{benefit.description}</p>
-        <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => navigate(`/edit-benefit/${benefit._id}`)}
-            className="px-5 py-2 bg-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-all mb-6"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDelete(benefit._id)}
-            className="px-5 py-2 bg-red-400 text-white font-medium rounded-lg hover:bg-red-500 transition-all mb-6"
-          >
-            Delete
-          </button>
-        </div>
+    <SimpleListPage title="Benefits" addPath="/add-benefit" loading={loading} error={error} count={list.length}>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {list.map((benefit) => {
+          const icon = mediaUrl(benefit.icon);
+          return (
+            <div key={benefit._id} className={`${ui.card} p-6 flex flex-col`}>
+              <div className="flex items-start justify-between gap-4">
+                <div className="w-14 h-14 shrink-0 bg-Orange_90 border-2 border-Grey_15 rounded-lg flex items-center justify-center">
+                  {icon ? (
+                    <img src={icon} alt="" className="w-8 h-8 object-contain" loading="lazy" />
+                  ) : (
+                    <span className="text-[20px] font-[800]">{benefit.title?.[0]}</span>
+                  )}
+                </div>
+                <CardActions
+                  onEdit={() => navigate(`/edit-benefit/${benefit._id}`)}
+                  onDelete={() => dispatch(removeBenefit(benefit._id)).unwrap()}
+                />
+              </div>
+              <h3 className={`${ui.cardTitle} mt-5`}>{benefit.title}</h3>
+              <p className={`${ui.cardText} mt-2`}>{benefit.description}</p>
+            </div>
+          );
+        })}
       </div>
-    ))}
-  </div>
-) : (
-  <p className="text-dimGray text-center">No benefits found.</p>
-)}
-
-        </div>
-      </div>
-    </Loading>
+    </SimpleListPage>
   );
 };
 

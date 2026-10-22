@@ -1,32 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createBenefit, editBenefit, fetchBenefits } from "../../redux/benefit/benefit";
 import { useNavigate, useParams } from "react-router-dom";
-import { AppDispatch } from "../../redux/store";
-import { RootState } from "../../redux/store"; // Assuming you have this type in your store
+import toast from "react-hot-toast";
+import { createBenefit, editBenefit, fetchBenefits } from "../../redux/benefit/benefit";
+import { AppDispatch, RootState } from "../../redux/store";
+import FormShell, { FileField, FormActions } from "../../components/common/ui/FormShell";
+import { mediaUrl } from "../../components/common/ui/SimpleListPage";
 
 const AddEditBenefit: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { id } = useParams();
-
-  // Redux state: assuming benefits is part of the Redux store
   const { benefits } = useSelector((state: RootState) => state.benefits);
 
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [icon, setIcon] = useState<File | null>(null);
   const [iconPreview, setIconPreview] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null;
-    if (file) {
-      setIcon(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setIconPreview(reader.result as string);
-      reader.readAsDataURL(file);
+  useEffect(() => {
+    if (benefits.length === 0) dispatch(fetchBenefits());
+  }, [dispatch, benefits.length]);
+
+  useEffect(() => {
+    if (!id) return;
+    const existing = benefits.find((benefit) => benefit._id === id);
+    if (existing) {
+      setTitle(existing.title);
+      setDescription(existing.description);
+      setIconPreview(mediaUrl(existing.icon) ?? null);
     }
-  };
+  }, [id, benefits]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,95 +39,41 @@ const AddEditBenefit: React.FC = () => {
     formData.append("title", title);
     formData.append("description", description);
     if (icon) formData.append("icon", icon);
-
-    if (id) {
-      dispatch(editBenefit({ id, formData }));
-    } else {
-      dispatch(createBenefit(formData));
+    setBusy(true);
+    try {
+      if (id) await dispatch(editBenefit({ id, formData })).unwrap();
+      else await dispatch(createBenefit(formData)).unwrap();
+      toast.success(id ? "Benefit updated" : "Benefit added");
+      navigate("/benefits");
+    } catch {
+      toast.error("Something went wrong, please try again");
+    } finally {
+      setBusy(false);
     }
-
-    navigate("/"); // Redirect back to the Benefits page
   };
 
-  // Effect for loading existing benefit when editing
-  useEffect(() => {
-    if (id) {
-      const existingBenefit = benefits.find((benefit) => benefit._id === id);
-      if (existingBenefit) {
-        setTitle(existingBenefit.title);
-        setDescription(existingBenefit.description);
-      }
-    }
-  }, [id, benefits]);
-
-  // Fetch benefits on initial load if the benefits array is empty
-  useEffect(() => {
-    if (benefits.length === 0) {
-      dispatch(fetchBenefits());
-    }
-  }, [dispatch, benefits.length]);
-
   return (
-    <div className="min-h-screen flex flex-col justify-start p-8">
-      <h1 className="text-3xl font-bold mb-8 text-dimBlack text-center">
-        {id ? "Edit Benefit" : "Add New Benefit"}
-      </h1>
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto w-full">
-        <div>
-          <label className="block text-dimBlack font-medium mb-2">Title:</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="w-full p-4 border border-Grey_30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-lg"
-          />
+    <FormShell title={id ? "Edit Benefit" : "Add Benefit"}>
+      <form onSubmit={handleSubmit} className="student-form-form">
+        <div className="form-group full-width">
+          <label htmlFor="title">Title</label>
+          <input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
         </div>
-        <div>
-          <label className="block text-dimBlack font-medium mb-2">Description:</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            className="w-full p-4 border border-Grey_30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-lg h-40"
-          ></textarea>
+        <div className="form-group full-width">
+          <label htmlFor="description">Description</label>
+          <textarea id="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} required />
         </div>
-        <div>
-          <label className="block text-dimBlack font-medium mb-2">Icon:</label>
-          <div className="w-full p-4 border border-Grey_30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary relative">
-            {iconPreview ? (
-              <img
-                src={iconPreview}
-                alt="Icon Preview"
-                className="w-16 h-16 rounded-full object-cover mx-auto"
-              />
-            ) : (
-              <p className="text-center text-dimGray">Choose an icon</p>
-            )}
-            <input
-              type="file"
-              onChange={handleIconChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
-          </div>
-        </div>
-        <div className="flex justify-end space-x-4 mt-8">
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="px-5 py-2 bg-Grey_40 text-white font-medium rounded-lg hover:bg-Grey_60 transition-all mb-6"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-5 py-2 bg-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-all mb-6"
-          >
-            {id ? "Update Benefit" : "Add Benefit"}
-          </button>
-        </div>
+        <FileField
+          label="Icon"
+          preview={iconPreview}
+          onChange={(file) => {
+            setIcon(file);
+            setIconPreview(URL.createObjectURL(file));
+          }}
+        />
+        <FormActions busy={busy} isEdit={!!id} onCancel={() => navigate("/benefits")} />
       </form>
-    </div>
+    </FormShell>
   );
 };
 

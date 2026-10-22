@@ -1,88 +1,73 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFAQ } from "../../redux/faq/faqAct";
+import { useNavigate } from "react-router-dom";
+import { RiAddLine } from "react-icons/ri";
+import { fetchFAQs, removeFAQ } from "../../redux/faq/faqAct";
 import { RootState, AppDispatch } from "../../redux/store";
 import Loading from "../../components/common/Loading/Loading";
-import { useNavigate } from "react-router-dom";
+import PageHeader from "../../components/common/ui/PageHeader";
+import CardActions from "../../components/common/ui/CardActions";
+import { ui } from "../../components/common/ui/ui";
+import { EmptyState } from "../../components/common/GridList/GridList";
 
 const FAQPage: React.FC = () => {
   const navigate = useNavigate();
-  const { faqs, loading, error } = useSelector(
-    (state: RootState) => state.faqs
-  );
   const dispatch = useDispatch<AppDispatch>();
-  const handleDelete = (id: string) => {
-    dispatch(removeFAQ(id));
-  };
+  const { faqs, loading, error } = useSelector((state: RootState) => state.faqs);
+
+  useEffect(() => {
+    dispatch(fetchFAQs());
+  }, [dispatch]);
 
   return (
-    <Loading
-      status={loading ? "Pending" : error ? "Fail" : "Success"}
-      error={error}
-    >
-      <div className="w-full mt-4">
-        <button
-          onClick={() => navigate("/add-faq")}
-          className="px-5 py-2 bg-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-all mb-6"
-        >
-          Add New FAQ
-        </button>
+    <div className="page">
+      <PageHeader
+        title="FAQ"
+        subtitle={loading && !faqs.length ? undefined : `${faqs.length} question${faqs.length === 1 ? "" : "s"}`}
+        action={
+          <button className={`${ui.btn} ${ui.primary}`} onClick={() => navigate("/add-faq")}>
+            <RiAddLine size={18} /> Add New
+          </button>
+        }
+      />
+      <Loading
+        status={loading ? "Pending" : error ? "Fail" : "Success"}
+        error={error}
+        variant="table"
+        hasData={faqs.length > 0}
+      >
         {faqs.length === 0 ? (
-          <p>No FAQs found.</p>
+          <EmptyState />
         ) : (
-          <div className="flex justify-center items-center w-full px-4">
-            <div className="w-full  bg-white shadow-lg rounded-lg overflow-hidden">
-              <table className=" divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Question
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Answer
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
+          <div className={ui.tableWrap}>
+            <table className={ui.table}>
+              <thead>
+                <tr>
+                  <th className={ui.th}>Question</th>
+                  <th className={ui.th}>Answer</th>
+                  <th className={`${ui.th} w-28 text-right`}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {faqs.map((faq) => (
+                  <tr key={faq._id} className="hover:bg-Orange_97 transition-colors">
+                    <td className={`${ui.td} font-[600] text-dimBlack min-w-[220px]`}>{faq.question}</td>
+                    <td className={`${ui.td} min-w-[280px]`}>{faq.answer}</td>
+                    <td className={ui.td}>
+                      <CardActions
+                        className="justify-end"
+                        onEdit={() => navigate(`/faq/${faq._id}`)}
+                        onDelete={() => dispatch(removeFAQ(faq._id)).unwrap()}
+                      />
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {faqs.map((faq) => (
-                    <tr
-                      key={faq._id}
-                      className="hover:bg-gray-50 transition-all"
-                    >
-                      <td className="px-6 py-4  text-sm font-medium text-gray-900">
-                        {faq.question}
-                      </td>
-                      <td className="px-6 py-4  text-sm text-gray-500">
-                        {faq.answer}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => navigate(`/faq/${faq._id}`)}
-                            className="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-all"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(faq._id)}
-                            className="px-4 py-2 bg-red-400 text-white font-medium rounded-lg hover:bg-red-500 transition-all"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
-      </div>
-    </Loading>
+      </Loading>
+    </div>
   );
 };
 

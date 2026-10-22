@@ -1,15 +1,6 @@
-/* ===== Tailwind ===== */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-* {
-  transition: all 0.3 ease-in-out;
-  -webkit-transition: all 0.3 ease-in-out;
-  -moz-transition: all 0.3 ease-in-out;
-  -ms-transition: all 0.3 ease-in-out;
-  -o-transition: all 0.3 ease-in-out;
-}
 
 div,
 span,
@@ -96,12 +87,11 @@ h6 {
   --dimWhite-color: #fffcfa;
   --dimBlack-color: #191919;
 }
-/* 
 body {
   background: #fff5f0;
-} */
+  color: #262626;
+}
 
-/* ===scrollbar=== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -120,7 +110,6 @@ body {
   -o-border-radius: 20px;
 }
 
-/* === custom select text === */
 ::-moz-selection {
   color: var(--dimBlack-color);
   background: var(--primary-color);
@@ -131,19 +120,68 @@ body {
   background: var(--primary-color);
 }
 
-.line {
-  position: relative;
-}
-.line::after {
-  content: "" !important;
-  position: absolute !important;
-  width: 200px !important;
-  background-color: red !important;
+.page {
+  padding: 28px 32px 48px;
 }
 
-.fix-height {
-  min-height: calc(100vh - 70px);
+@media (max-width: 640px) {
+  .page {
+    padding: 20px 16px 40px;
+  }
 }
-.overflow-height {
-  height: calc(100vh - 70px);
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #ffe3d1;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-bar {
+  animation: progress-slide 1.1s ease-in-out infinite;
+}
+
+@keyframes progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after,
+  .progress-bar {
+    animation: none;
+  }
 }

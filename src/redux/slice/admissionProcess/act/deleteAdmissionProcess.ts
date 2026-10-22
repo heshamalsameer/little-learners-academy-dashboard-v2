@@ -6,9 +6,8 @@ const deleteAdmissionProcess = createAsyncThunk(
   async (id: string, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
-      // @ts-ignore */}
-      const res = await axios.delete(`/api/admission-process/${id}`);
-      return id; // Access response.data.data if needed
+      await axios.delete(`/api/admission-process/${id}`);
+      return id; 
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(error.message);

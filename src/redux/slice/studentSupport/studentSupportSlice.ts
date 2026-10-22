@@ -1,13 +1,11 @@
 import {  createSlice } from "@reduxjs/toolkit";
 
 
-// Thunks 
 import getAllStudentSupports from "./act/getAllStudentSupports";
 import addStudentSupport from "./act/addStudentSupport";
 import deleteStudentSupport from "./act/deleteStudentSupport";
 import updateStudentSupport from "./act/updateStudentSupport";
 
-// Types
 export interface IStudentSupport {
   _id?: string;
   name: string;
@@ -21,7 +19,6 @@ type TState = {
   error: string | null;
 };
 
-// State
 const initialState: TState = {
   records: [],
   isLoading: "Idle",
@@ -31,7 +28,6 @@ const initialState: TState = {
 
 
 
-// Slice
 const StudentSupportSlice = createSlice({
   name: "student-support",
   initialState,

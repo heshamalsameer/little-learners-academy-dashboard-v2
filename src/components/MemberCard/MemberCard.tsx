@@ -1,17 +1,9 @@
-import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { useNavigate } from "react-router-dom";
-
-
+import { useAppDispatch } from "../../redux/hooks";
 import { deleteMember } from "../../redux/slice/members/memberSlice";
-import toast from "react-hot-toast";
-import Modal from "../Modal/Modal";
-
-
-import { MdEdit } from "react-icons/md";
-
-import { RiDeleteBin6Line } from "react-icons/ri";
-
+import CardActions from "../common/ui/CardActions";
+import { ui } from "../common/ui/ui";
+import { MdOutlineMail } from "react-icons/md";
 
 type TProps = {
   id: string;
@@ -22,72 +14,38 @@ type TProps = {
   email?: string;
 };
 
-const MemberCard: React.FC<TProps> = ({
-  id,
-  name,
-  photo,
-  description,
-  qualification,
-  email,
-}) => {
-  const [open, setOpen] = useState(false);
-
-  // Check Error From Slice
-  const { error } = useAppSelector((state) => state.memberSlice);
-
+const MemberCard: React.FC<TProps> = ({ id, name, photo, description, qualification, email }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // Function To Handle Navigation To Update Page
-  const handleClickUpdate = () => {
-    navigate(`/team-members/update/${id}`);
-  };
-
-  // Function To Handle Delete Item
-  const handleClickDelete = () => {
-    dispatch(deleteMember(id as string));
-    if (!error) {
-      toast.success("item deleted successfully");
-    } else {
-      toast.error("try again");
-    }
-  };
   return (
-    <div className="max-w-4xl h-full   bg-white border-r-8 border-b-8 border-l-2 border-t-2 border-[#262626] rounded p-10 mx-auto">
-      <div className="flex justify-between items-center flex-row-reverse  gap-3 mb-2">
-       <div className="flex  gap-3">
-       <button className="text-4xl  text-white hover:bg-red-400 bg-[#FF8D4C] p-2 rounded-lg"  onClick={handleClickUpdate}>
-          <MdEdit/>
-        </button>
-        <button
-          onClick={() => {
-            setOpen(true);
-          }}
-          className="text-4xl text-white hover:bg-red-400 bg-red-600 p-2 rounded-lg"
-        >
-          <RiDeleteBin6Line/>
-        </button>
-       </div>
-      <div className="w-36">
-      <img src={photo} className="border-2 border-black rounded mb-4 w-auto" alt="photo" />
-      </div>
-
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-center">
-          <h2 className="font-extrabold text-2xl ml-3">{name}</h2>
+    <div className={`${ui.card} p-6 h-full flex flex-col`}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-4 min-w-0">
+          <img
+            src={photo || "/assets/images/Vector.png"}
+            className="w-16 h-16 shrink-0 object-cover border-2 border-Grey_15 rounded-lg bg-Orange_95"
+            alt={name}
+            loading="lazy"
+          />
+          <div className="min-w-0">
+            <h3 className={`${ui.cardTitle} truncate`}>{name}</h3>
+            {email && (
+              <p className="flex items-center gap-1.5 text-[13px] text-Grey_40 truncate">
+                <MdOutlineMail className="shrink-0" /> {email}
+              </p>
+            )}
+          </div>
         </div>
+        <CardActions
+          onEdit={() => navigate(`/team-members/update/${id}`)}
+          onDelete={() => dispatch(deleteMember(id)).unwrap()}
+        />
       </div>
-
-      <div className="w-full  bg-[#FFF5F0] mt-5 border-2 border-black p-10 break-words">
-        <p className="font-semibold text-xl text-left xs:p-2 p-6">
-          {qualification}
-        </p>
-        <p className="font-medium break-words">{description}</p>
-        <p className="text-Grey_30 text-center mt-20">{email}</p>
+      <div className="mt-5 bg-Orange_97 border-2 border-Grey_15 rounded-lg p-4 flex-1">
+        <p className="text-[15px] font-[700] text-dimBlack">{qualification}</p>
+        <p className={`${ui.cardText} mt-1.5`}>{description}</p>
       </div>
-      <Modal open={open} onClose={() => setOpen(false)} handleClickDelete={handleClickDelete}/>
     </div>
   );
 };

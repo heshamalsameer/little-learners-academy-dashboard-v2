@@ -1,64 +1,59 @@
-import React from "react"
+import React from "react";
+import { X } from "react-feather";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { ui } from "../common/ui/ui";
 
-// Icon X
-import { X } from "react-feather"
+type TProps = {
+  open: boolean;
+  onClose: () => void;
+  handleClickDelete: () => void;
+  busy?: boolean;
+};
 
-// Types
-type TProps={
-    open:boolean,
-    onClose:()=>void,
-    handleClickDelete:()=>void
-}
-
- const Modal:React.FC<TProps>=({ open, onClose, handleClickDelete }) =>{
+const Modal: React.FC<TProps> = ({ open, onClose, handleClickDelete, busy }) => {
   return (
-    // backdrop
     <div
       onClick={onClose}
-      className={`
-        fixed inset-0 flex justify-center items-center transition-colors z-20
-        ${open ? "visible bg-black/20" : "invisible"}
-      `}
+      className={`fixed inset-0 flex justify-center items-center p-4 transition-colors z-50 ${
+        open ? "visible bg-Grey_15/40 backdrop-blur-[2px]" : "invisible"
+      }`}
     >
-      {/* modal */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`
-          bg-white rounded-xl shadow p-6 transition-all
-          ${open ? "scale-100 opacity-100" : "scale-125 opacity-0"}
-        `}
+        role="dialog"
+        aria-modal="true"
+        className={`relative bg-white border-2 border-Grey_15 rounded-xl shadow-[5px_5px_0_#262626] p-6 w-full max-w-sm transition-all ${
+          open ? "scale-100 opacity-100" : "scale-110 opacity-0"
+        }`}
       >
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 p-1 rounded-lg text-gray-400 bg-white hover:bg-gray-50 hover:text-gray-600"
+          aria-label="Close"
+          className="absolute top-3 right-3 p-1 rounded-md text-Grey_40 hover:bg-Orange_95 hover:text-Grey_15"
         >
-          <X />
+          <X size={18} />
         </button>
-        <div className="text-center w-56">
-          <div className="mx-auto my-4 w-48">
-            <h3 className="text-lg font-black text-gray-800">Confirm Delete</h3>
-            <p className="text-sm text-gray-500">
-              Are you sure you want to delete this item?
-            </p>
+        <div className="text-center">
+          <div className="mx-auto w-12 h-12 rounded-full bg-red-50 border-2 border-red-200 text-red-500 flex items-center justify-center text-[20px]">
+            <RiDeleteBin6Line />
           </div>
-          <div className="flex gap-4">
-            <button
-              className="btn bg-red-500 rounded-md text-white hover:bg-red-300  p-2 w-full"
-              onClick={handleClickDelete}
-            >
-              Delete
-            </button>
-            <button
-              className="btn btn-light w-full"
-              onClick={onClose}
-            >
+          <h3 className="text-[18px] font-[800] text-dimBlack mt-4">Confirm Delete</h3>
+          <p className="text-[14px] text-Grey_40 mt-1">
+            Are you sure you want to delete this item? This can't be undone.
+          </p>
+          <div className="flex gap-3 mt-6">
+            <button className={`${ui.btn} ${ui.secondary} flex-1`} onClick={onClose} disabled={busy}>
               Cancel
+            </button>
+            <button className={`${ui.btn} ${ui.danger} flex-1`} onClick={handleClickDelete} disabled={busy}>
+              {busy && <span className="btn-spinner" />}
+              {busy ? "Deleting..." : "Delete"}
             </button>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Modal
+export default Modal;

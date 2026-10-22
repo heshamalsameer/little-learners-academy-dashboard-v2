@@ -1,13 +1,11 @@
 import {  createSlice } from "@reduxjs/toolkit";
 
 
-// Thunks 
 import getAllSubjects from "./act/getAllSubjects";
 import addSubject from "./act/addSubject";
 import updateSubject from "./act/updateSubject";
 import deleteSubject from "./act/deleteSubject";
 
-// Types
 export interface ISubject {
   _id?: string;
   name: string;
@@ -21,7 +19,6 @@ type TState = {
   error: string | null;
 };
 
-// State
 const initialState: TState = {
   records: [],
   isLoading: "Idle",
@@ -31,7 +28,6 @@ const initialState: TState = {
 
 
 
-// Slice
 const subjectSlice = createSlice({
   name: "subject",
   initialState,

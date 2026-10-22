@@ -1,13 +1,11 @@
 import {  createSlice } from "@reduxjs/toolkit";
 
 
-// Thunks 
 import getAllTestimonials from "./act/getAllTestimonials";
 import addTestimonail from "./act/addTestimonial";
 import updateTestimonial from "./act/updateTestimonial";
 import deleteTestimonial from "./act/deleteTestimonial";
 
-// Types
 export interface TTestimonial {
   _id?: string;
   name: string;
@@ -22,7 +20,6 @@ type TState = {
   error: string | null;
 };
 
-// State
 const initialState: TState = {
   testimonials: [],
   isLoading: "Idle",
@@ -32,7 +29,6 @@ const initialState: TState = {
 
 
 
-// Slice
 const testimonialSlice = createSlice({
   name: "testimonial",
   initialState,

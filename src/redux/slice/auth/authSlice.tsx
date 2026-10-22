@@ -1,13 +1,11 @@
 import {  createSlice } from "@reduxjs/toolkit";
 
 
-// Thunks 
 
 import Auth from "./act/Auth";
 import toast from "react-hot-toast";
 
 
-// Types
 
 type TState = {
   info:{name:string,email:string,password:string} |null
@@ -16,7 +14,6 @@ type TState = {
 
 };
 
-// State
 const initialState: TState = {
   info:null,
   isLoading: "Idle",
@@ -28,7 +25,6 @@ const initialState: TState = {
 
 
 
-// Slice
 const authSlice = createSlice({
   name: "auth",
   initialState,

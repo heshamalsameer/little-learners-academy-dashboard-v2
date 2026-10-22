@@ -23,7 +23,8 @@ const UploadImage = ({ form, type, records }: TProps) => {
 
   useEffect(() => {
     if (isUpdateMode) {
-      const record = records.find((item: any) => item._id === id);
+      const record = records?.find((item: any) => item._id === id);
+      if (!record) return;
       if (record.photo) {
         setImage(record.photo?.url!);
       }

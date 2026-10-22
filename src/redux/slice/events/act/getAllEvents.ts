@@ -10,7 +10,6 @@ const getAllEvents = createAsyncThunk(
           "/api/events"
         );
 
-        console.log(res.data.data)
   
         return res.data.data;
       } catch (error) {

@@ -1,7 +1,8 @@
+import { API_BASE } from "../../services/api";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE_URL = "https://little-learners-academy-back-end-j3iu.onrender.com/api/history";
+const BASE_URL = `${API_BASE}/api/history`;
 
 export const fetchHistories = createAsyncThunk("histories/fetchHistories", async () => {
   const response = await axios.get(BASE_URL);
@@ -12,7 +13,6 @@ export const createHistory = createAsyncThunk(
   "histories/createHistory",
   async (history: { year: number; title: string; description: string }) => {
     const response = await axios.post(BASE_URL, history);
-    console.log("Created History:", response.data); 
     return response.data.data; 
   }
 );

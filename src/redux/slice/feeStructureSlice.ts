@@ -1,9 +1,9 @@
+import { API_BASE } from "../../services/api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "https://little-learners-academy-back-end-j3iu.onrender.com/api/fee-structure";
+const API_URL = `${API_BASE}/api/fee-structure`;
 
-// Fetch all fee structures
 export const fetchFeeStructures = createAsyncThunk(
   "feeStructures/fetchFeeStructures",
   async () => {
@@ -15,39 +15,34 @@ export const fetchFeeStructures = createAsyncThunk(
   }
 );
 
-        // Fetch a fee structure by ID
         export const fetchFeeStructureById = createAsyncThunk(
         "feeStructures/fetchFeeStructureById",
         async (id: string) => {
             const response = await axios.get(`${API_URL}/${id}`);
-            return response.data; // Adjust based on actual API structure
+            return response.data?.data ?? response.data;
         }
         );
 
-        // Create a new fee structure
         export const createFeeStructure = createAsyncThunk(
         "feeStructures/createFeeStructure",
         async (formData: { program: string; ageGroup: string; annualTuition: string; registrationFee: string; activityFee: string }) => {
             const response = await axios.post(API_URL, formData);
-            return response.data;
+            return response.data?.data ?? response.data;
         }
         );
 
-    // Edit an existing fee structure
     export const editFeeStructure = createAsyncThunk(
     "feeStructures/editFeeStructure",
     async ({ id, formData }: { id: string; formData: { program: string; ageGroup: string; annualTuition: string; registrationFee: string; activityFee: string } }) => {
         const response = await axios.put(`${API_URL}/${id}`, formData);
-        return response.data;
+        return response.data?.data ?? response.data;
     }
     );
 
-    // Remove a fee structure
     export const removeFeeStructure = createAsyncThunk(
     "feeStructures/removeFeeStructure",
     async (id: string) => {
-      // @ts-ignore */}
-        const response = await axios.delete(`${API_URL}/${id}`);
+        await axios.delete(`${API_URL}/${id}`);
         return id;  
     }
     );

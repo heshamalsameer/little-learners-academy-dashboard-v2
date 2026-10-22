@@ -6,10 +6,9 @@ const deleteMember = createAsyncThunk(
     async (id:string, thunkAPI) => {
       const { rejectWithValue } = thunkAPI;
       try {
-        const res = await axios.delete(
+        await axios.delete(
           `/api/team-members/${id}`,
         );
-        console.log(res.data)
   
         return id;
       } catch (error) {

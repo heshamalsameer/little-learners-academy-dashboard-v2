@@ -8,7 +8,6 @@ const getAllStudentSupports = createAsyncThunk(
     try {
       const res = await axios.get("/api/student-support");
 
-      console.log(res.data.data);
 
       return res.data.data;
     } catch (error) {

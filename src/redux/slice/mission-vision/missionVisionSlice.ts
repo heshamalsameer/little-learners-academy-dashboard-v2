@@ -1,13 +1,11 @@
 import {  createSlice } from "@reduxjs/toolkit";
 
 
-// Thunks 
 import getAllMissionVision from "./act/getAllMissionVision";
 import addMissionVision from "./act/addMissionVision";
 import updateMssionVision from "./act/updateMssionVision";
 import deleteMissionVision from "./act/deleteMissionVision";
 
-// Types
 export interface TMissionVision {
   _id?: string;
   title: string;
@@ -20,7 +18,6 @@ type TState = {
   error: string | null;
 };
 
-// State
 const initialState: TState = {
   records: [],
   isLoading: "Idle",
@@ -30,7 +27,6 @@ const initialState: TState = {
 
 
 
-// Slice
 const missionVisionSlice = createSlice({
   name: "missionVision",
   initialState,

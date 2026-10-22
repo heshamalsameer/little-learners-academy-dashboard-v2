@@ -25,7 +25,6 @@ const faqSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch
       .addCase(fetchFAQs.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -39,19 +38,16 @@ const faqSlice = createSlice({
         state.error = "Failed to fetch FAQs.";
       })
 
-      // Add
       .addCase(createFAQ.fulfilled, (state, action) => {
         state.faqs.push(action.payload);
       })
 
-      // Update
       .addCase(editFAQ.fulfilled, (state, action) => {
         state.faqs = state.faqs.map((faq) =>
           faq._id === action.payload._id ? action.payload : faq
         );
       })
 
-      // Delete
       .addCase(removeFAQ.fulfilled, (state, action) => {
         state.faqs = state.faqs.filter((faq) => faq._id !== action.payload);
       });

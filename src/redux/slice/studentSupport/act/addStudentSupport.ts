@@ -9,7 +9,6 @@ const addStudentSupport = createAsyncThunk(
         const res = await axios.post(
           "/api/student-support",data
         );
-         console.log(res.data)
         return res.data.data;
       } catch (error) {
         if (axios.isAxiosError(error)) {

@@ -1,28 +1,21 @@
-// React And Hooks
 import React, { useEffect, useState } from "react";
 
-//Hook-Form
 import { useForm, SubmitHandler } from "react-hook-form";
 
-// Styles
 import "../Forms.css";
 import { useNavigate, useParams } from "react-router-dom";
 
-// Thunks
 import {
   addMissionVision,
   updateMssionVision,
 
 } from "../../../redux/slice/mission-vision/missionVisionSlice";
 
-// Redux
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 
-// React-Hot-Toast
 import toast from "react-hot-toast";
 import Loading from "../../common/Loading/Loading";
 
-// Types
 type Inputs = {
   title: string;
   description: string;
@@ -32,7 +25,6 @@ const MissionVisionForm: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  // Info From Slice
   const { records, isLoading, error } = useAppSelector(
     (state) => state.missionVision
   );
@@ -41,7 +33,6 @@ const MissionVisionForm: React.FC = () => {
 
   const { Ptitle } = useParams();
 
-  //  Set Values To Inputs From Testimonial
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -57,7 +48,6 @@ const MissionVisionForm: React.FC = () => {
     }
   }, [Ptitle, records, isUpdateMode]);
 
-  // Hook-Form
   const {
     register,
     handleSubmit,
@@ -70,21 +60,19 @@ const MissionVisionForm: React.FC = () => {
     },
   });
 
-  // Function To Handle Submit
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     const action = isUpdateMode
       ? updateMssionVision({ title: Ptitle, data: data })
       : addMissionVision(data);
 
-    dispatch(action).then(() => {
-      if (isLoading == "Fail") {
-        toast.error("Please Try Again ");
-      } else {
-        toast.success("done");
+    dispatch(action)
+      .unwrap()
+      .then(() => {
+        toast.success("Saved successfully");
 
         navigate("/mission-vision");
-      }
-    });
+      })
+      .catch(() => toast.error("Something went wrong, please try again"));
   };
 
   useEffect(() => {
@@ -92,9 +80,8 @@ const MissionVisionForm: React.FC = () => {
   }, [ title, description, reset]);
 
   return (
-    <Loading status={isLoading} error={error}>
+    <Loading status={isLoading} error={error} variant="form" hasData>
       <form className="student-form-form" onSubmit={handleSubmit(onSubmit)}>
-        {/* Form Fields */}
         <div className="form-group">
           <label htmlFor="Name">Title</label>
           <input
@@ -132,8 +119,9 @@ const MissionVisionForm: React.FC = () => {
             <span className="text-red-400">{errors.description.message}</span>
           )}
         </div>
-        <button type="submit" className="submit-button">
-          {typeof Ptitle == "string" ? "UPDATE" : "ADD"}
+        <button type="submit" className="submit-button" disabled={isLoading === "Pending"}>
+          {isLoading === "Pending" && <span className="btn-spinner" />}
+          {typeof Ptitle == "string" ? "Save Changes" : "Add Item"}
         </button>
       </form>
     </Loading>

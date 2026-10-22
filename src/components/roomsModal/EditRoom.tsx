@@ -1,3 +1,4 @@
+import { API_BASE } from "../../services/api";
 import { useState } from "react";
 import {
   Dialog,
@@ -46,14 +47,13 @@ export default function EditRoom({
     const form = new FormData();
     form.append("name", formData.name);
     form.append("description", formData.description);
-    // @ts-ignore */}
-    formData.images.forEach((file) => {
+    formData.images.forEach((file: File) => {
       form.append("images", file);
     });
 
     try {
       const res = await axios.put(
-        `https://little-learners-academy-back-end-j3iu.onrender.com/api/rooms/${roomId}`,
+        `${API_BASE}/api/rooms/${roomId}`,
         form,
         {
           headers: {
@@ -63,8 +63,7 @@ export default function EditRoom({
       );
 
       setrooms(
-        // @ts-ignore */}
-        rooms.map((item, indexItem) => {
+        rooms.map((item: any, indexItem: number) => {
           if (indexItem == index) {
             return res.data.data;
           } else {
@@ -86,31 +85,31 @@ export default function EditRoom({
   };
 
   return (
-    <Dialog open={isOpen} onClose={setIsopen} className="relative z-10">
+    <Dialog open={isOpen} onClose={setIsopen} className="relative z-[60]">
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+        className="fixed inset-0 bg-Grey_15/40 backdrop-blur-[2px] transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
       />
 
-      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div className="fixed inset-0 z-[60] w-screen overflow-y-auto">
         <div className="flex min-h-[80%] lg:min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <DialogPanel
             transition
-            className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+            className="relative transform overflow-hidden rounded-xl border-2 border-Grey_15 bg-white text-left shadow-[5px_5px_0_#262626] transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
             <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
               <div className="">
                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                   <DialogTitle
                     as="h3"
-                    className="text-2xl lg:text-3xl font-bold text-gray-900"
+                    className="text-[20px] font-[800] text-dimBlack"
                   >
                     Update this Room
                   </DialogTitle>
                   <div className="mt-2">
                     <label
                       htmlFor="name"
-                      className="block text-dimBlack font-medium mb-2 mt-5"
+                      className="field-label block mt-4"
                     >
                       Name:
                     </label>
@@ -122,11 +121,11 @@ export default function EditRoom({
                       placeholder="Add name of room"
                       onChange={handleChange}
                       required
-                      className="w-full p-3 border border-Grey_30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="field-input"
                     />
                     <label
                       htmlFor="description"
-                      className="block text-dimBlack font-medium mb-2 mt-5"
+                      className="field-label block mt-4"
                     >
                       Description:
                     </label>
@@ -138,11 +137,11 @@ export default function EditRoom({
                       placeholder="Add description"
                       onChange={handleChange}
                       required
-                      className="w-full p-3 border border-Grey_30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="field-input"
                     />
                     <label
                       htmlFor="images"
-                      className="block text-dimBlack font-medium mb-2 mt-5"
+                      className="field-label block mt-4"
                     >
                       Images:
                     </label>
@@ -150,19 +149,19 @@ export default function EditRoom({
                       type="file"
                       name="images"
                       onChange={onImageChange}
-                      multiple // Allow multiple files to be selected
+                      multiple
                       required
-                      className="w-full p-3 border border-Grey_30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="field-input"
                     />
                   </div>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <div className="bg-Orange_97 border-t-2 border-Grey_15/10 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-3">
               <button
                 type="button"
                 onClick={() => EditRom()}
-                className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                className="inline-flex w-full items-center justify-center h-10 rounded-lg px-4 text-sm font-semibold text-white border-2 sm:w-auto bg-primary border-Grey_15 shadow-[3px_3px_0_#262626] hover:shadow-[1px_1px_0_#262626]"
               >
                 <svg
                   className={` ${
@@ -179,7 +178,7 @@ export default function EditRoom({
                   setIsopen(false);
                   setisLoading(false);
                 }}
-                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                className="mt-3 inline-flex w-full items-center justify-center h-10 rounded-lg bg-white px-4 text-sm font-semibold text-Grey_15 border-2 border-Grey_15 hover:bg-Orange_95 sm:mt-0 sm:w-auto"
               >
                 Cancel
               </button>

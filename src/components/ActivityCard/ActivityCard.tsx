@@ -1,86 +1,39 @@
-import React, { useState } from "react";
-import styles from "../../styles";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-
-import { MdEdit } from "react-icons/md";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import Modal from "../Modal/Modal";
-
+import { useAppDispatch } from "../../redux/hooks";
+import CardActions from "../common/ui/CardActions";
+import { ui } from "../common/ui/ui";
 
 interface IProps {
-  id:string;
+  id: string;
   name: string;
   description: string;
   image: string;
-  to:string,
-  handleDelete:any
+  to: string;
+  handleDelete: any;
 }
-const ActivityCard: React.FC<IProps> = ({ id,image, name, description ,to,handleDelete}) => {
 
-  const [open, setOpen] = useState(false);
-
-  // Check Error From Slice
-  const { error } = useAppSelector((state) => state.subjectSlice);
-
+const ActivityCard: React.FC<IProps> = ({ id, image, name, description, to, handleDelete }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // Function To Handle Navigation To Update Page
-  const handleClickUpdate = () => {
-    navigate(`/${to}/update/${id}`);
-  };
-
-  // Function To Handle Delete Item
-  const handleClickDelete = () => {
-    dispatch(handleDelete(id as string));
-    if (!error) {
-      toast.success("item deleted successfully");
-    } else {
-      toast.error("try again");
-    }
-  };
-
   return (
-    <div
-      className={`BenefitCard ${styles.cardStyle} relative md:px-12 px-6 pt-20 pb-12 w-full mt-10 h-full`}
-    >
-            <div className="flex z-10 absolute right-4 top-4 gap-2  ">
-              <button
-                className="text-4xl  text-white hover:bg-red-400 bg-[#FF8D4C] p-2 rounded-lg"
-                onClick={handleClickUpdate}
-              >
-                <MdEdit />
-              </button>
-              <button
-                onClick={() => {
-                  setOpen(true);
-                }}
-                className="text-4xl text-white hover:bg-red-400 bg-red-600 p-2 rounded-lg"
-              >
-                <RiDeleteBin6Line />
-              </button>
-            </div>
-      
-
-      <div className="header">
-        <div
-          className="icon-box bg-Orange_90 border-2 border-black rounded-lg
-          absolute -top-8 left-5"
-        >
-          <div className="p-5 ">
-            <img src={image} className="w-10" alt="" />
-          </div>
+    <div className={`${ui.card} p-6 h-full flex flex-col`}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="w-14 h-14 shrink-0 bg-Orange_90 border-2 border-Grey_15 rounded-lg flex items-center justify-center overflow-hidden">
+          {image ? (
+            <img src={image} className="w-8 h-8 object-contain" alt="" loading="lazy" />
+          ) : (
+            <span className="text-[20px] font-[800] text-Grey_15">{name?.[0]}</span>
+          )}
         </div>
-        <div className="bode">
-          <h4 className="md:text-[28px] text-[22px] font-[700]">{name}</h4>
-          <p className=" md:text-[20px] text-[16px] font-[500] text-Grey_30 mt-4">
-            {description}
-          </p>
-        </div>
+        <CardActions
+          onEdit={() => navigate(`/${to}/update/${id}`)}
+          onDelete={() => dispatch(handleDelete(id)).unwrap()}
+        />
       </div>
-      <Modal open={open} onClose={()=>{setOpen(false)}} handleClickDelete={handleClickDelete}/>
+      <h3 className={`${ui.cardTitle} mt-5`}>{name}</h3>
+      <p className={`${ui.cardText} mt-2`}>{description}</p>
     </div>
   );
 };

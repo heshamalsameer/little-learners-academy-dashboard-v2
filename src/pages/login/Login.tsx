@@ -1,76 +1,89 @@
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Navigate, useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { Auth } from "../../redux/slice/auth/authSlice";
-import { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import Lottie from "lottie-react";
-import loading from "../../services/loading.json";
+import "../../components/Forms/Forms.css";
 
 type Inputs = {
   email: string;
   password: string;
 };
+
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
   const { isLoading } = useAppSelector((state) => state.authSlice);
 
-  // Hook-Form
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await dispatch(Auth(data));
+  if (localStorage.getItem("token")) return <Navigate to="/" replace />;
 
-    navigate("/", { replace: true });
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    const result = await dispatch(Auth(data));
+    if (Auth.fulfilled.match(result) && localStorage.getItem("token")) {
+      navigate("/", { replace: true });
+    }
   };
 
+  const pending = isLoading === "Pending";
+
   return (
-    <section className="fix-height  m-auto px-7 flex items-center justify-center bg-[#FF8D4C] h-screen">
-      <Toaster />
-      <div className="m-auto bg-white shadow-xl rounded-lg p-5 w-full md:w-1/3">
-        <h1 className="text-3xl font-bold text-[#FF8D4C] mb-5 text-center">
-          Log In
-        </h1>
-        <form className="student-form-form" onSubmit={handleSubmit(onSubmit)}>
-          {/* Form Fields */}
-          <div className="form-group">
+    <section className="min-h-screen px-4 flex items-center justify-center bg-Orange_97 relative overflow-hidden">
+      <Toaster position="top-right" />
+      <img
+        src="/assets/images/Abstract Design.webp"
+        alt=""
+        className="absolute top-0 left-0 w-40 md:w-64 opacity-90 pointer-events-none"
+      />
+      <img
+        src="/assets/images/Abstract Design-01.webp"
+        alt=""
+        className="absolute bottom-0 right-0 w-40 md:w-64 rotate-180 opacity-90 pointer-events-none"
+      />
+      <div className="relative w-full max-w-md bg-white border-2 border-Grey_15 rounded-xl shadow-[6px_6px_0_#262626] p-6 md:p-8">
+        <div className="flex justify-center">
+          <span className="bg-primary border-2 border-Grey_15 rounded-lg px-4 py-2">
+            <img src="/assets/Logo.png" className="h-7 w-auto" alt="Little Learners" />
+          </span>
+        </div>
+        <h1 className="text-[24px] font-[800] text-dimBlack mt-6 text-center">Welcome back</h1>
+        <p className="text-[14px] text-Grey_40 text-center mt-1 mb-6">
+          Sign in to manage the academy website content.
+        </p>
+        <form className="student-form-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div className="form-group full-width">
             <label htmlFor="Email">Email</label>
             <input
               id="Email"
               type="email"
-              placeholder="Enter Email"
-              {...register("email", { required: "The Email is Required" })}
+              autoComplete="email"
+              placeholder="you@example.com"
+              {...register("email", { required: "Email is required" })}
             />
-            {errors.email && (
-              <span className="text-red-400">{errors.email.message}</span>
-            )}
+            {errors.email && <span className="text-red-400">{errors.email.message}</span>}
           </div>
           <div className="form-group full-width">
             <label htmlFor="password">Password</label>
             <input
               id="password"
-              placeholder="Enter Password"
               type="password"
+              autoComplete="current-password"
+              placeholder="••••••••"
               {...register("password", {
-                minLength: { value: 6, message: "Too Short Password" },
+                required: "Password is required",
+                minLength: { value: 6, message: "Password must be at least 6 characters" },
               })}
-            ></input>
-            {errors.password && (
-              <span className="text-red-400">{errors.password.message}</span>
-            )}
+            />
+            {errors.password && <span className="text-red-400">{errors.password.message}</span>}
           </div>
-
-          <button type="submit" className="submit-button">
-            {isLoading == "Pending" ? (
-              <Lottie style={{ width: "50px" }} animationData={loading} />
-            ) : (
-              "LOGIN"
-            )}
+          <button type="submit" className="submit-button" disabled={pending}>
+            {pending && <span className="btn-spinner" />}
+            {pending ? "Signing in..." : "Sign In"}
           </button>
         </form>
       </div>

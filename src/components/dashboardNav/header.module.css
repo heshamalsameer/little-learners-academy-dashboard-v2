@@ -17,14 +17,12 @@
   font-size: 30px;
   font-weight: bold;
   color: #FF8D4C;
-  /* color: rgb(176, 15, 176); */
 }
 .menu {
   font-size: 40px;
   font-weight: bold;
   color: #202121;
   cursor: pointer;
-  /* display: none; */
 }
 .navLinks {
   margin-left: 30px;
@@ -43,15 +41,21 @@
   cursor: pointer;
   background-color: #FF8D4C;
   color: white;
-  border-radius: 10px;
-  padding: 5px 10px;
-  font-size: 37px;
+  border: 2px solid #262626;
+  border-radius: 8px;
+  height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
   font-weight: 600;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  gap: 8px;
+  box-shadow: 3px 3px 0 #262626;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 .btn:hover {
-  background-color: darkblue;
+  box-shadow: 1px 1px 0 #262626;
+  transform: translate(2px, 2px);
 }
 .navLink:hover {
   color: darkblue;

@@ -6,8 +6,7 @@ const deleteAward = createAsyncThunk(
   async (id: string, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
-      // @ts-ignore */}
-      const res = await axios.delete(`/api/awards/${id}`);
+      await axios.delete(`/api/awards/${id}`);
       return id;
     } catch (error) {
       if (axios.isAxiosError(error)) {

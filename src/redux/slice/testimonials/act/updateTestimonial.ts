@@ -9,7 +9,6 @@ const updateTestimonial = createAsyncThunk(
         const res = await axios.put(
           `/api/testimonials/${info.id}`,info.data
         );
-        console.log(res.data);
         return res.data.data;
       } catch (error) {
         if (axios.isAxiosError(error)) {

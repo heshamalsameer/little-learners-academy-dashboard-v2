@@ -1,15 +1,12 @@
 import React, { useEffect } from "react";
 
-// Thunks
 
 import { getAllActivities } from "../../redux/slice/activities/activitySlice";
 
-// Redux
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 import {deleteActivity} from "../../redux/slice/activities/activitySlice"
 
-// Component
 import GridList from "../../components/common/GridList/GridList";
 import MainContent from "../../components/common/MainContent/MainContent";
 import ActivityCard from "../../components/ActivityCard/ActivityCard";
@@ -17,19 +14,17 @@ import ActivityCard from "../../components/ActivityCard/ActivityCard";
 const Activities: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  // Info From Slice
   const { records, isLoading, error } = useAppSelector(
     (state) => state.activitySlice
   );
 
 
-  // For Fetching All Testimonials From Slice
   useEffect(() => {
     dispatch(getAllActivities());
   }, [dispatch]);
 
   return (
-    <MainContent status={isLoading} error={error} to="activities">
+    <MainContent status={isLoading} error={error} to="activities" count={records.length}>
       <GridList
         records={records}
         renderItems={(record) => (

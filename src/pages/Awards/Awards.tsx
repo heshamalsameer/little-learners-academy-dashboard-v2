@@ -1,15 +1,12 @@
 import React, { useEffect } from "react";
 
-// Thunks
 
 import { getAllAwards } from "../../redux/slice/awards/awardSlice";
 
-// Redux
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 import {deleteAward} from "../../redux/slice/awards/awardSlice"
 
-// Component
 import GridList from "../../components/common/GridList/GridList";
 import MainContent from "../../components/common/MainContent/MainContent";
 import ActivityCard from "../../components/ActivityCard/ActivityCard";
@@ -17,19 +14,17 @@ import ActivityCard from "../../components/ActivityCard/ActivityCard";
 const Awards: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  // Info From Slice
   const { records, isLoading, error } = useAppSelector(
     (state) => state.AwardSlice
   );
 
 
-  // For Fetching All Testimonials From Slice
   useEffect(() => {
     dispatch(getAllAwards());
   }, [dispatch]);
 
   return (
-    <MainContent status={isLoading} error={error} to="awards">
+    <MainContent status={isLoading} error={error} to="awards" count={records.length}>
       <GridList
         records={records}
         renderItems={(record) => (

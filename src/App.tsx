@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import DashBoardLayout from "./pages/Layout";
 import { DashBoardLinks } from "./constants";
 
-// To Set BaseUrl To Any axios Request
 import "./services/axios-global";
 import NewItem from "./components/common/NewItem/NewItem";
 import TestimonialForm from "./components/Forms/TestimonialForm/TestimonialForm";

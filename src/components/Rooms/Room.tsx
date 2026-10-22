@@ -1,144 +1,88 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-// @ts-ignore */}
 import "swiper/css";
-// @ts-ignore */}
-import "swiper/css/pagination";
-// @ts-ignore */}
 import "swiper/css/free-mode";
-import { FreeMode, Pagination } from "swiper/modules";
-
-import { FaArrowRight } from "react-icons/fa6";
-import { FaArrowLeft } from "react-icons/fa6";
+import { FreeMode } from "swiper/modules";
+import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { useRef, useState } from "react";
-
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import EditRoom from "../roomsModal/EditRoom";
 import DeleteRoomModal from "../roomsModal/DeleteRoomModal";
+import { ui } from "../common/ui/ui";
 
 export const Room = ({ rooms, room, setRooms, index }: any) => {
-  const swiperRef = useRef<null | any>(null);
-
-  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
-
-  // console.log(room);
-
-  const goToNextSlide = () => {
-    swiperRef.current.swiper.slideNext();
-  };
-
-  const goToPrevSlide = () => {
-    swiperRef.current.swiper.slidePrev();
-  };
+  const swiperRef = useRef<any>(null);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const images: { url: string }[] = room.images ?? [];
 
   return (
-    <div className="relative ">
-      <EditRoom
-        index={index}
-        isOpen={openEditModal}
-        setIsopen={setOpenEditModal}
-        rooms={rooms}
-        setrooms={setRooms}
-      />
-      <DeleteRoomModal
-        index={index}
-        isOpen={openDeleteModal}
-        setIsopen={setOpenDeleteModal}
-        rooms={rooms}
-        setrooms={setRooms}
-      />
-      <div className="mx-[3.125%]">
+    <div className="relative">
+      <EditRoom index={index} isOpen={openEditModal} setIsopen={setOpenEditModal} rooms={rooms} setrooms={setRooms} />
+      <DeleteRoomModal index={index} isOpen={openDeleteModal} setIsopen={setOpenDeleteModal} rooms={rooms} setrooms={setRooms} />
+      <div className="px-6 relative z-10">
         <Swiper
           ref={swiperRef}
-          breakpoints={{
-            768: {
-              slidesPerView: 2,
-              spaceBetween: 15,
-            },
-            1024: {
-              slidesPerView: 4,
-              spaceBetween: 15,
-            },
-          }}
+          spaceBetween={14}
+          slidesPerView={1.2}
+          breakpoints={{ 640: { slidesPerView: 2 }, 1280: { slidesPerView: 4 } }}
           freeMode={true}
-          // pagination={{
-          //   clickable: true,
-          // }}
-
-          loop={true}
-          modules={[FreeMode, Pagination]}
-          className="cursor-pointer"
+          loop={images.length > 4}
+          modules={[FreeMode]}
+          className="cursor-grab"
         >
-          {
-            // @ts-ignore */}
-            room.images.map((item, index) => {
-              return (
-                <SwiperSlide key={index}>
-                  <img
-                    src={item.url}
-                    alt={room.name}
-                    className=" rounded-xl border-2 border-[Grey_15] w-auto"
-                  />
-                </SwiperSlide>
-              );
-            })
-          }
+          {images.map((item, i) => (
+            <SwiperSlide key={i}>
+              <img
+                src={item.url}
+                alt={room.name}
+                loading="lazy"
+                className="rounded-xl border-2 border-Grey_15 w-full aspect-[4/3] object-cover bg-Orange_95"
+              />
+            </SwiperSlide>
+          ))}
         </Swiper>
       </div>
-      <div
-        className="lg:pt-[12%] top-[60%] pt-[40%] md:pt-[20%] w-[100%]   bg-white border-2
-           rounded-xl border-Grey_15 shadow-card-shadow absolute
-      "
-      >
-        <div
-          className="flex justify-between items-center xl:flex-row flex-col-reverse mx-[3.125%]
-                xl:mb-[30px] mb-[20px] 2xl:mb-[40px] gap-[20px]
-      "
-        >
-          <h1 className="font-[700] text-[28px] xl:text-[34px] 2xl:text-[40px]">
-            {room.name}
-          </h1>
-          <div className="w-[37.5%] xl:w-[9%] flex gap-4 justify-end">
+      <div className={`${ui.card} -mt-16 pt-20 pb-6 px-6`}>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-[20px] md:text-[24px] font-[800]">{room.name}</h3>
+          <div className="flex items-center gap-2">
+            {images.length > 1 && (
+              <>
+                <button
+                  aria-label="Previous image"
+                  onClick={() => swiperRef.current?.swiper.slidePrev()}
+                  className={`${ui.iconBtn} bg-white border-Grey_15 hover:bg-Orange_95`}
+                >
+                  <FaArrowLeft />
+                </button>
+                <button
+                  aria-label="Next image"
+                  onClick={() => swiperRef.current?.swiper.slideNext()}
+                  className={`${ui.iconBtn} bg-white border-Grey_15 hover:bg-Orange_95`}
+                >
+                  <FaArrowRight />
+                </button>
+                <span className="w-px h-6 bg-Grey_15/20 mx-1" />
+              </>
+            )}
             <button
-              onClick={goToPrevSlide}
-              className="w-[42.8%] border-2 hover:bg-Orange_95 border-[#333333] flex items-center justify-center
-                      rounded-lg p-[14px] "
+              aria-label="Edit room"
+              onClick={() => setOpenEditModal(true)}
+              className={`${ui.iconBtn} bg-white border-Grey_15 text-Grey_15 hover:bg-Orange_90`}
             >
-              <FaArrowLeft />
+              <MdEdit />
             </button>
             <button
-              onClick={goToNextSlide}
-              className="w-[42.8%] border-2 hover:bg-Orange_95 border-[#333333] flex items-center justify-center
-          rounded-lg p-[1px] 2xl:p-[14px]
-          "
+              aria-label="Delete room"
+              onClick={() => setOpenDeleteModal(true)}
+              className={`${ui.iconBtn} bg-white border-red-500 text-red-500 hover:bg-red-500 hover:text-white`}
             >
-              <FaArrowRight />
+              <RiDeleteBin6Line />
             </button>
           </div>
         </div>
-        <p className="px-[3.125%] text-center lg:text-start mb-[40px] text-[18px] font-[500] xl:text-[20px] 2xl:text-[22px]">
-          {room.description}
-        </p>
-        <div className="flex justify-center lg:justify-end  items-center  gap-3 me-8 mb-5">
-          <button
-            className="text-4xl  text-white hover:bg-red-400 bg-[#FF8D4C] p-2 rounded-lg"
-            // onClick={handleClickUpdate}
-            onClick={() => {
-              setOpenEditModal(true);
-            }}
-          >
-            <MdEdit />
-          </button>
-          <button
-            onClick={() => {
-              setOpenDeleteModal(true);
-            }}
-            className="text-4xl text-white hover:bg-red-400 bg-red-600 p-2 rounded-lg"
-          >
-            <RiDeleteBin6Line />
-          </button>
-        </div>
+        <p className={`${ui.cardText} mt-2`}>{room.description}</p>
       </div>
     </div>
   );

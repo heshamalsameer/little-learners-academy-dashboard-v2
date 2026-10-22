@@ -1,13 +1,11 @@
 import {  createSlice } from "@reduxjs/toolkit";
 
 
-// Thunks 
 import getAllEvents from "./act/getAllEvents";
 import addEvent from "./act/addEvent"
 import updateEvent from "./act/updateEvent";
 import deleteEvent from "./act/deleteEvent";
 
-// Types
 export interface IEvent {
   _id?: string;
   name: string;
@@ -21,7 +19,6 @@ type TState = {
   error: string | null;
 };
 
-// State
 const initialState: TState = {
   records: [],
   isLoading: "Idle",
@@ -31,7 +28,6 @@ const initialState: TState = {
 
 
 
-// Slice
 const eventSlice = createSlice({
   name: "event",
   initialState,

@@ -9,7 +9,6 @@ const updateMember = createAsyncThunk(
         const res = await axios.put(
           `/api/team-members/${info.id}`,info.data
         );
-        console.log(res.data);
         return res.data.data;
       } catch (error) {
         if (axios.isAxiosError(error)) {

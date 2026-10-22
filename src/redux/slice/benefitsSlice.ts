@@ -1,4 +1,3 @@
-// redux/benefit/benefitSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchBenefits, createBenefit, editBenefit, removeBenefit } from "../benefit/benefit";
 

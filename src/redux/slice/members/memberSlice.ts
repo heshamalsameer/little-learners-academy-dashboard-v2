@@ -1,13 +1,11 @@
 import {  createSlice } from "@reduxjs/toolkit";
 
 
-// Thunks 
 import getAllMembers from "./act/getAllMembers";
 import addMember from "./act/addMember";
 import updateMember from "./act/updateMember";
 import deleteMember from "./act/deleteMember";
 
-// Types
 export interface IMember {
   _id?: string;
   name: string;
@@ -23,7 +21,6 @@ type TState = {
   error: string | null;
 };
 
-// State
 const initialState: TState = {
   records: [],
   isLoading: "Idle",
@@ -33,7 +30,6 @@ const initialState: TState = {
 
 
 
-// Slice
 const memberSlice = createSlice({
   name: "members",
   initialState,

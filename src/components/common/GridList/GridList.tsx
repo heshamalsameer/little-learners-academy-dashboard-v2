@@ -8,29 +8,22 @@ type TGridListProps<T> = {
   grid: boolean;
 };
 
+export const EmptyState = ({ message = "No items yet. Start by adding a new one." }: { message?: string }) => (
+  <div className="flex flex-col items-center text-center py-6">
+    <Lottie animationData={notfound} style={{ width: 280, maxWidth: "100%" }} />
+    <p className="text-[15px] text-Grey_40 mt-2">{message}</p>
+  </div>
+);
+
 const GridList = <T,>({ records, renderItems, grid }: TGridListProps<T>) => {
-  const flag=records.length> 0 ? true : false;
-  const List =
-    records.length > 0 ? (
-      records?.map((record, index) => {
-        return (
-          <div className="mb-6" key={index}>
-            {renderItems(record)}
-          </div>
-        );
-      })
-    ) : (
-      <Lottie
-        animationData={notfound}
-        style={{ width: "400px" }}
-        className="m-auto mt-10 "
-      />
-    );
+  if (!records?.length) return <EmptyState />;
   return (
-    <div
-      className={`${grid && flag ? "grid  gap-4 xs:grid-cols-1 md:grid-cols-2 " : ""}`}
-    >
-      {List}
+    <div className={grid ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch" : "flex flex-col gap-6"}>
+      {records.map((record, index) => (
+        <div key={(record as any)?._id ?? index} className="h-full">
+          {renderItems(record)}
+        </div>
+      ))}
     </div>
   );
 };

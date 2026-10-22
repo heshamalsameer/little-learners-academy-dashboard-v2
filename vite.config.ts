@@ -43,7 +43,6 @@ const manifestForPlugIn: any = {
     orientation: "portrait",
   },
 };
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), VitePWA(manifestForPlugIn)],
 

@@ -1,13 +1,9 @@
-// Router-Dom
 import { useNavigate } from "react-router-dom";
-// Styles
 import styles from "../../components/dashboardNav/header.module.css";
-// Component
 import TestimonialForm from "../../components/Forms/TestimonialForm/TestimonialForm";
 
 const NewTestimonial: React.FC = () => {
   const navigate = useNavigate();
-  // Function To Handle Back Button
   const clickedHandler = () => {
     navigate(-1);
   };

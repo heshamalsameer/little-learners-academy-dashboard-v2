@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { RiAddLine } from "react-icons/ri";
 import { Room } from "../../components/Rooms/Room";
 import { RoomTitles } from "../../components/Rooms/RoomsTitles";
-import styles from "../../components/dashboardNav/header.module.css";
 import AddRoomModal from "../../components/roomsModal/AddRoomModal";
-import Lottie from "lottie-react";
-import notfound from "../../components/common/GridList/not found.json";
+import PageHeader from "../../components/common/ui/PageHeader";
+import { ui } from "../../components/common/ui/ui";
+import { Bone } from "../../components/common/ui/Skeleton";
+import { EmptyState } from "../../components/common/GridList/GridList";
+import Loading from "../../components/common/Loading/Loading";
+import { API_BASE } from "../../services/api";
 
 export type RoomType = {
   name: string;
@@ -13,111 +17,84 @@ export type RoomType = {
   _id: string;
 };
 
+const RoomsSkeleton = () => (
+  <div className="flex flex-col gap-10">
+    {[0, 1].map((r) => (
+      <div key={r}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-6 relative z-10">
+          {[0, 1, 2, 3].map((i) => (
+            <Bone key={i} className={`h-36 !rounded-xl ${i > 1 ? "hidden lg:block" : ""}`} />
+          ))}
+        </div>
+        <div className="bg-white border-2 border-Grey_15/15 rounded-xl -mt-16 pt-24 pb-6 px-6">
+          <Bone className="h-6 w-40" />
+          <Bone className="h-4 w-2/3 mt-3" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 const Rooms = () => {
   const [roomSelected, setroomSelected] = useState<string>("All");
   const [rooms, setrooms] = useState<RoomType[]>([]);
+  const [status, setStatus] = useState<"Pending" | "Success" | "Fail">("Pending");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // fetch api to get all rooms
-    fetch(
-      "https://little-learners-academy-back-end-j3iu.onrender.com/api/rooms"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setrooms(data.data);
+    fetch(`${API_BASE}/api/rooms`)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Request failed (${response.status})`);
+        return response.json();
       })
-      .catch((error) => console.error("Error:", error));
+      .then((data) => {
+        setrooms(data.data ?? []);
+        setStatus("Success");
+      })
+      .catch(() => setStatus("Fail"));
   }, []);
 
-  useEffect(() => {
-    // get data by room's id
-    if (roomSelected != "All") {
-      fetch(
-        `https://little-learners-academy-back-end-j3iu.onrender.com/api/rooms/${roomSelected}`
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          setrooms([data.data]);
-        })
-        .catch((error) => console.error("Error:", error));
-    } else {
-      fetch(
-        `https://little-learners-academy-back-end-j3iu.onrender.com/api/rooms`
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          setrooms(data.data);
-        })
-        .catch((error) => console.error("Error:", error));
-    }
-  }, [roomSelected]);
-  if (rooms.length <= 0) {
-    return (
-      <>
-        <button
-          className={`${styles.btn} mt-4 w-fit`}
-          onClick={() => {
-            setOpen((pre) => !pre);
-          }}
-        >
-          New Room
-        </button>
-        <AddRoomModal
-          isOpen={open}
-          setIsopen={setOpen}
-          rooms={rooms}
-          setRooms={setrooms}
-        />
-        <Lottie
-          animationData={notfound}
-          style={{ width: "400px" }}
-          className="m-auto mt-10"
-        />
-      </>
-    );
-  }
-  return (
-    <div
-      className=" mx-[auto] w-[81.79vw] xl:w-[78.89vw] 2xl:[94.79] pe-0 md:pe-24 
-          flex flex-col mb-[80%] md:mb-[20%] xl:mb-[15%]"
-    >
-      <AddRoomModal
-        isOpen={open}
-        setIsopen={setOpen}
-        rooms={rooms}
-        setRooms={setrooms}
-      />
+  const visible = useMemo(
+    () => (roomSelected === "All" ? rooms : rooms.filter((room) => room._id === roomSelected)),
+    [rooms, roomSelected]
+  );
 
-      <button
-        className={`${styles.btn} mt-4 w-fit`}
-        onClick={() => {
-          setOpen((pre) => !pre);
-        }}
-      >
-        New Room
-      </button>
-      <div className="allRooms w-[100%] py-10 sm:py-[6.3rem]">
-        <RoomTitles
-          roomSelected={roomSelected}
-          setroomSelected={setroomSelected}
-        />
-        <div className="flex flex-col gap-[400px]">
-          {rooms.map((item, index) => {
-            return (
-              <>
-                <Room
-                  key={index}
-                  index={index}
-                  rooms={rooms}
-                  room={item}
-                  setRooms={setrooms}
-                />
-              </>
-            );
-          })}
-        </div>
-      </div>
+  return (
+    <div className="page">
+      <PageHeader
+        title="Rooms"
+        subtitle={status === "Pending" ? undefined : `${rooms.length} room${rooms.length === 1 ? "" : "s"}`}
+        action={
+          <button className={`${ui.btn} ${ui.primary}`} onClick={() => setOpen(true)}>
+            <RiAddLine size={18} /> Add Room
+          </button>
+        }
+      />
+      <AddRoomModal isOpen={open} setIsopen={setOpen} rooms={rooms} setRooms={setrooms} />
+      {status === "Pending" ? (
+        <RoomsSkeleton />
+      ) : (
+        <Loading status={status} error="Couldn't load rooms" hasData={rooms.length > 0}>
+          {rooms.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <>
+              <RoomTitles rooms={rooms} roomSelected={roomSelected} setroomSelected={setroomSelected} />
+              <div className="flex flex-col gap-10">
+                {visible.map((item) => (
+                  <Room
+                    key={item._id}
+                    index={rooms.findIndex((r) => r._id === item._id)}
+                    rooms={rooms}
+                    room={item}
+                    setRooms={setrooms}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </Loading>
+      )}
     </div>
   );
 };

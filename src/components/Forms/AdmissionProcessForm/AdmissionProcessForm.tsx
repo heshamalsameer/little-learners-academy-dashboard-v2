@@ -9,7 +9,6 @@ import {
 import toast from "react-hot-toast";
 import Loading from "../../common/Loading/Loading";
 
-// Types
 type Inputs = {
   step: string;
   description: string;
@@ -20,7 +19,6 @@ const AdmissionProcessForm = () => {
 
   const { id } = useParams();
 
-  // Info From Slice
   const { admissionProcess, isLoading, error } = useAppSelector(
     (state) => state.admissionProcessSlice
   );
@@ -42,7 +40,6 @@ const AdmissionProcessForm = () => {
     }
   }, [id, isUpdateMode, admissionProcess]);
 
-  // Hook-Form
   const {
     register,
     handleSubmit,
@@ -59,7 +56,6 @@ const AdmissionProcessForm = () => {
     reset({ step, description });
   }, [step, description, reset]);
 
-  // Function To Handle Submit
   const form = new FormData();
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     form.append("step", data.step);
@@ -69,22 +65,20 @@ const AdmissionProcessForm = () => {
       ? updateAdmissionProcess({ id: id, data: form })
       : addAdmissionProcess({ step: data.step, description: data.description });
 
-    dispatch(action).then(() => {
-      if (error) {
-        toast.error("Please Try Again");
-      } else {
+    dispatch(action)
+      .unwrap()
+      .then(() => {
         toast.success(
           isUpdateMode ? "Update Successful" : "Addition Successful"
         );
         navigate("/admissionProcess");
-      }
-    });
+      })
+      .catch(() => toast.error("Something went wrong, please try again"));
   };
 
   return (
-    <Loading status={isLoading} error={error}>
+    <Loading status={isLoading} error={error} variant="form" hasData>
       <form className="student-form-form" onSubmit={handleSubmit(onSubmit)}>
-        {/* Form Fields */}
         <div className="form-group">
           <label htmlFor="Name">step</label>
           <input
@@ -113,8 +107,9 @@ const AdmissionProcessForm = () => {
           )}
         </div>
 
-        <button type="submit" className="submit-button">
-          {typeof id == "string" ? "UPDATE" : "ADD"}
+        <button type="submit" className="submit-button" disabled={isLoading === "Pending"}>
+          {isLoading === "Pending" && <span className="btn-spinner" />}
+          {typeof id == "string" ? "Save Changes" : "Add Item"}
         </button>
       </form>
     </Loading>

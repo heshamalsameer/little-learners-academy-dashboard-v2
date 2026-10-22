@@ -1,12 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Thunks
 import getAllAdmissionProcess from "./act/getAllAdmissionProcess";
 import addAdmissionProcess from "./act/addAdmissionProcess";
 import updateAdmissionProcess from "./act/updateAdmissionProcess";
 import deleteAdmissionProcess from "./act/deleteAdmissionProcess";
 
-// Types
 export interface TypeAdmissionProcess {
   _id: string;
   step: string;
@@ -19,14 +17,12 @@ type TState = {
   error: string | null;
 };
 
-// State
 const initialState: TState = {
   admissionProcess: [],
   isLoading: "Idle",
   error: null,
 };
 
-// Slice
 const admissionProcessSlice = createSlice({
   name: "admissionProcess",
   initialState,
@@ -39,7 +35,7 @@ const admissionProcessSlice = createSlice({
     builder.addCase(getAllAdmissionProcess.fulfilled, (state, action) => {
       state.isLoading = "Success";
       state.error = null;
-      state.admissionProcess = action.payload; // Handle response.data.data
+      state.admissionProcess = action.payload; 
     });
     builder.addCase(getAllAdmissionProcess.rejected, (state, action) => {
       state.isLoading = "Fail";
@@ -67,7 +63,7 @@ const admissionProcessSlice = createSlice({
       state.error = null;
       state.admissionProcess = state.admissionProcess.map((admissionProcess) =>
         admissionProcess._id === action.payload._id
-          ? { ...admissionProcess, ...action.payload } // Update the item
+          ? { ...admissionProcess, ...action.payload } 
           : admissionProcess
       );
     });

@@ -1,12 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Thunks
 import getAllActivities from "./act/getAllActivities";
 import addActivity from "./act/addActivity";
 import deleteActivity from "./act/deleteActivity";
 import updateActivity from "./act/updateActivity";
 
-// Types
 export interface IActivity {
   _id?: string;
   name: string;
@@ -20,14 +18,12 @@ type TState = {
   error: string | null;
 };
 
-// State
 const initialState: TState = {
   records: [],
   isLoading: "Idle",
   error: null,
 };
 
-// Slice
 const activitySlice = createSlice({
   name: "activity",
   initialState,

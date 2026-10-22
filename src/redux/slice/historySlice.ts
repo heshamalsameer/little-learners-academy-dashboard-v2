@@ -31,7 +31,6 @@ const historySlice = createSlice({
         state.error = null;
       })
       .addCase(fetchHistories.fulfilled, (state, action) => {
-        console.log("Fetched Histories:", action.payload); 
         state.loading = false;
         state.histories = Array.isArray(action.payload) ? action.payload : []; 
       })

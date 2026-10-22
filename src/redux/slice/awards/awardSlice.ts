@@ -1,12 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Thunks
 import getAllAwards from "./act/getAllAwards";
 import addAward from "./act/addAward";
 import deleteAward from "./act/deleteAward";
 import updateAward from "./act/updateAward";
 
-// Types
 export interface IAward {
   _id?: string;
   name: string;
@@ -20,14 +18,12 @@ type TState = {
   error: string | null;
 };
 
-// State
 const initialState: TState = {
   records: [],
   isLoading: "Idle",
   error: null,
 };
 
-// Slice
 const awardSlice = createSlice({
   name: "award",
   initialState,
